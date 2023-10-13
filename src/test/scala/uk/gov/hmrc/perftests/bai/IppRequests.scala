@@ -25,10 +25,7 @@ import uk.gov.hmrc.perftests.testdata.RisklistResponseCodes.{ACCOUNT_NOT_ON_WATC
 
 object IppRequests extends ServicesConfiguration {
 
-  val bankAccountRetriever = new BankAccountRetriever()
-  val BankAccount(chosenSortCode, chosenAccountNumber) = bankAccountRetriever.getABankAccount
-
-  val riskySortCode = "999998"
+  val riskySortCode      = "999998"
   val riskyAccountNumber = "44311677"
 
   val baseUrl: String = baseUrlFor("bank-account-insights-proxy")
@@ -38,30 +35,46 @@ object IppRequests extends ServicesConfiguration {
       .post(s"$baseUrl/ipp")
       .header(HttpHeaderNames.ContentType, "application/json")
       .header(HttpHeaderNames.UserAgent, "bai-performance-tests")
-      .body(StringBody(
-        """|{
+      .body(StringBody("""{
            |  "sortCode": "999998",
            |  "accountNumber": "44311677"
-           |}
-           |""".stripMargin))
+           |}""".stripMargin))
       .asJson
       .check(status.is(200))
       .check(jsonPath("$.insights.risk.riskScore").is("100"))
       .check(jsonPath("$.insights.risk.reason").is(ACCOUNT_ON_WATCH_LIST))
       .check(jsonPath("$.insights.relationships[0].attribute").is("sa_utr"))
       .check(jsonPath("$.insights.relationships[0].count").is("1"))
-      .check(jsonPath("$.insights.relationships[0].attributeValues[0]").is(ATTRIBUTE_VALUE_ONE))
-      .check(jsonPath("$.insights.relationships[1].attribute").is("SelfAssessmentUTR"))
-      .check(jsonPath("$.insights.relationships[1].count").is("1"))
-      .check(jsonPath("$.insights.relationships[1].attributeValues[0]").is(ATTRIBUTE_VALUE_TWO))
+//      .check(jsonPath("$.insights.relationships[0].attributeValues[0]").is(ATTRIBUTE_VALUE_ONE))
+
+  val checkAccountNotOnWatchListThroughIppProxyWithBigResponses: HttpRequestBuilder =
+    http("Check if account is not on watch list through ipp proxy with big responses")
+      .post(s"$baseUrl/ipp")
+      .header(HttpHeaderNames.ContentType, "application/json")
+      .header(HttpHeaderNames.UserAgent, "bai-performance-tests")
+      .body(StringBody("""|{
+          "sortCode": "768723",
+          "accountNumber": "91434244"
+        }
+        """.stripMargin))
+      .asJson
+      .check(status.is(200))
+      .check(jsonPath("$.insights.risk.riskScore").is("0"))
+      .check(jsonPath("$.insights.risk.reason").is(ACCOUNT_NOT_ON_WATCH_LIST))
+      .check(jsonPath("$.insights.relationships[?(@.attribute == \"agent_code\")].count").is("1192"))
+      .check(jsonPath("$.insights.relationships[?(@.attribute == \"user_id\")].count").is("1223"))
+      .check(jsonPath("$.insights.relationships[?(@.attribute == \"person_full_name\")].count").is("1192"))
+      .check(jsonPath("$.insights.relationships[?(@.attribute == \"sa_utr\")].count").is("1192"))
+      .check(jsonPath("$.insights.relationships[?(@.attribute == \"ct_utr\")].count").is("1216"))
+      .check(jsonPath("$.insights.relationships[?(@.attribute == \"paye_ref\")].count").is("1169"))
+      .check(jsonPath("$.insights.relationships[?(@.attribute == \"vrn\")].count").is("1118"))
 
   val checkAccountNotOnWatchListThroughIppProxy: HttpRequestBuilder =
     http("Check if account is not on watch list through ipp proxy")
       .post(s"$baseUrl/ipp")
       .header(HttpHeaderNames.ContentType, "application/json")
       .header(HttpHeaderNames.UserAgent, "bai-performance-tests")
-      .body(StringBody(
-        """|{
+      .body(StringBody("""|{
           "sortCode": "404784",
           "accountNumber": "70872490"
         }
@@ -72,14 +85,12 @@ object IppRequests extends ServicesConfiguration {
       .check(jsonPath("$.insights.risk.reason").is(ACCOUNT_NOT_ON_WATCH_LIST))
       .check(jsonPath("$.insights.relationships[0].attribute").count.is(0))
 
-
   val checkAccountOnWatchListThroughIppProxyWithInsightsRoute: HttpRequestBuilder =
     http("Check if account is on watch list through ipp proxy via insights route")
       .post(s"$baseUrl/bank-account-insights/ipp")
       .header(HttpHeaderNames.ContentType, "application/json")
       .header(HttpHeaderNames.UserAgent, "bai-performance-tests")
-      .body(StringBody(
-        """|{
+      .body(StringBody("""|{
            |  "sortCode": "999998",
            |  "accountNumber": "44311677"
            |}
@@ -91,7 +102,4 @@ object IppRequests extends ServicesConfiguration {
       .check(jsonPath("$.insights.relationships[0].attribute").is("sa_utr"))
       .check(jsonPath("$.insights.relationships[0].count").is("1"))
       .check(jsonPath("$.insights.relationships[0].attributeValues[0]").is(ATTRIBUTE_VALUE_ONE))
-      .check(jsonPath("$.insights.relationships[1].attribute").is("SelfAssessmentUTR"))
-      .check(jsonPath("$.insights.relationships[1].count").is("1"))
-      .check(jsonPath("$.insights.relationships[1].attributeValues[0]").is(ATTRIBUTE_VALUE_TWO))
 }

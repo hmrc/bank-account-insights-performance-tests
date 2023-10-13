@@ -19,7 +19,7 @@ package uk.gov.hmrc.perftests.bai
 import uk.gov.hmrc.performance.simulation.PerformanceTestRunner
 import uk.gov.hmrc.perftests.bai.GatewayRequests.checkWatchListViaGateway
 import uk.gov.hmrc.perftests.bai.InsightsRequests.{checkWatchListThroughProxy, checkWatchListThroughProxyWithRoute}
-import uk.gov.hmrc.perftests.bai.IppRequests.{checkAccountNotOnWatchListThroughIppProxy, checkAccountOnWatchListThroughIppProxy, checkAccountOnWatchListThroughIppProxyWithInsightsRoute}
+import uk.gov.hmrc.perftests.bai.IppRequests.{checkAccountNotOnWatchListThroughIppProxy, checkAccountNotOnWatchListThroughIppProxyWithBigResponses, checkAccountOnWatchListThroughIppProxy, checkAccountOnWatchListThroughIppProxyWithInsightsRoute}
 
 class BAISimulation extends PerformanceTestRunner {
 
@@ -35,11 +35,22 @@ class BAISimulation extends PerformanceTestRunner {
   setup("check-account-on-watch-list-through-ipp-proxy", "Check account on watch list through ipp proxy") withRequests
     checkAccountOnWatchListThroughIppProxy
 
-  setup("check-account-not-on-watch-list-through-ipp-proxy", "Check account not on watch list through ipp proxy") withRequests
+  setup(
+    "check-account-not-on-watch-list-through-ipp-proxy",
+    "Check account not on watch list through ipp proxy"
+  ) withRequests
     checkAccountNotOnWatchListThroughIppProxy
 
-  setup("check-account-on-watch-list-through-ipp-proxy-with-route", "Check account on watch list through ipp proxy through insights route") withRequests
+  setup(
+    "check-account-on-watch-list-through-ipp-proxy-with-route",
+    "Check account on watch list through ipp proxy through insights route"
+  ) withRequests
     checkAccountOnWatchListThroughIppProxyWithInsightsRoute
+
+  setup(
+    "check-account-not-on-watch-list-through-ipp-proxy-with-big-responses",
+    "Check account not on watch list through ipp proxy with big responses"
+  ) withRequests checkAccountNotOnWatchListThroughIppProxyWithBigResponses
 
   runSimulation()
 }
