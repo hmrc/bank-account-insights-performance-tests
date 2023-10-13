@@ -1,7 +1,10 @@
 
 # bank-account-insights-performance-tests
 
-This is a placeholder README.md for a new repository
+Performance tests for the bank-account-insights suite of services.
+
+NOTE: These test rely on specific data in `staging` environment.
+If the data is missing then it can be reloaded using the data files in `src/test/resources/data/`.
 
 ### License
 
