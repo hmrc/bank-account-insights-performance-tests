@@ -101,5 +101,7 @@ object IppRequests extends ServicesConfiguration {
       .check(jsonPath("$.insights.risk.reason").is(ACCOUNT_ON_WATCH_LIST))
       .check(jsonPath("$.insights.relationships[0].attribute").is("sa_utr"))
       .check(jsonPath("$.insights.relationships[0].count").is("1"))
-      .check(jsonPath("$.insights.relationships[0].attributeValues[0]").is(ATTRIBUTE_VALUE_ONE))
+      .check(jsonPath("$.insights.relationships[0].attributeValues[0].value").is("1122334456"))
+      .check(jsonPath("$.insights.relationships[0].attributeValues[0].numOfOccurrences").is("1"))
+      .check(jsonPath("$.insights.relationships[0].attributeValues[0].lastSeen").is("2023-02-27T16:27:45.867Z"))
 }
