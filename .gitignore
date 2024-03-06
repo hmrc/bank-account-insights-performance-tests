@@ -13,6 +13,9 @@ dist
 /.idea_modules
 /.classpath
 /.project
+/.metals/
+/.bloop/
+/.bsp/
 /RUNNING_PID
 /.settings
 *.iws
