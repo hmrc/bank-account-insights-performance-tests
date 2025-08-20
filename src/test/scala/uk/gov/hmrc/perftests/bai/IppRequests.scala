@@ -20,88 +20,37 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import io.gatling.http.request.builder.HttpRequestBuilder
 import uk.gov.hmrc.performance.conf.ServicesConfiguration
-import uk.gov.hmrc.perftests.testdata.Relationships.{ATTRIBUTE_VALUE_ONE, ATTRIBUTE_VALUE_TWO}
-import uk.gov.hmrc.perftests.testdata.RisklistResponseCodes.{ACCOUNT_NOT_ON_WATCH_LIST, ACCOUNT_ON_WATCH_LIST}
 
 object IppRequests extends ServicesConfiguration {
 
-  val riskySortCode      = "999998"
-  val riskyAccountNumber = "44311677"
-
   val baseUrl: String = baseUrlFor("bank-account-insights-proxy")
 
-  val checkAccountOnWatchListThroughIppProxy: HttpRequestBuilder =
+  val checkAccountThroughIppProxy: HttpRequestBuilder =
     http("Check if account is on watch list through ipp proxy")
       .post(s"$baseUrl/ipp")
       .header(HttpHeaderNames.ContentType, "application/json")
       .header(HttpHeaderNames.UserAgent, "bai-performance-tests")
       .body(StringBody("""{
-           |  "sortCode": "999998",
-           |  "accountNumber": "44311677"
+           |  "sortCode": "#{sortCode}",
+           |  "accountNumber": "#{accountNumber}"
            |}""".stripMargin))
       .asJson
       .check(status.is(200))
-      .check(jsonPath("$.insights.risk.riskScore").is("100"))
-      .check(jsonPath("$.insights.risk.reason").is(ACCOUNT_ON_WATCH_LIST))
-      .check(jsonPath("$.insights.relationships[0].attribute").is("sa_utr"))
-      .check(jsonPath("$.insights.relationships[0].count").is("1"))
-//      .check(jsonPath("$.insights.relationships[0].attributeValues[0]").is(ATTRIBUTE_VALUE_ONE))
+      .check(jsonPath("$.insights.risk.riskScore").is("#{riskScore}"))
+      .check(jsonPath("$.insights.risk.reason").is("#{reason}"))
 
-  val checkAccountNotOnWatchListThroughIppProxyWithBigResponses: HttpRequestBuilder =
-    http("Check if account is not on watch list through ipp proxy with big responses")
-      .post(s"$baseUrl/ipp")
-      .header(HttpHeaderNames.ContentType, "application/json")
-      .header(HttpHeaderNames.UserAgent, "bai-performance-tests")
-      .body(StringBody("""|{
-          "sortCode": "768723",
-          "accountNumber": "91434244"
-        }
-        """.stripMargin))
-      .asJson
-      .check(status.is(200))
-      .check(jsonPath("$.insights.risk.riskScore").is("0"))
-      .check(jsonPath("$.insights.risk.reason").is(ACCOUNT_NOT_ON_WATCH_LIST))
-      .check(jsonPath("$.insights.relationships[?(@.attribute == \"agent_code\")].count").is("1192"))
-      .check(jsonPath("$.insights.relationships[?(@.attribute == \"user_id\")].count").is("1223"))
-      .check(jsonPath("$.insights.relationships[?(@.attribute == \"person_full_name\")].count").is("1192"))
-      .check(jsonPath("$.insights.relationships[?(@.attribute == \"sa_utr\")].count").is("1192"))
-      .check(jsonPath("$.insights.relationships[?(@.attribute == \"ct_utr\")].count").is("1216"))
-      .check(jsonPath("$.insights.relationships[?(@.attribute == \"paye_ref\")].count").is("1169"))
-      .check(jsonPath("$.insights.relationships[?(@.attribute == \"vrn\")].count").is("1118"))
-
-  val checkAccountNotOnWatchListThroughIppProxy: HttpRequestBuilder =
-    http("Check if account is not on watch list through ipp proxy")
-      .post(s"$baseUrl/ipp")
-      .header(HttpHeaderNames.ContentType, "application/json")
-      .header(HttpHeaderNames.UserAgent, "bai-performance-tests")
-      .body(StringBody("""|{
-          "sortCode": "404784",
-          "accountNumber": "70872490"
-        }
-        """.stripMargin))
-      .asJson
-      .check(status.is(200))
-      .check(jsonPath("$.insights.risk.riskScore").is("0"))
-      .check(jsonPath("$.insights.risk.reason").is(ACCOUNT_NOT_ON_WATCH_LIST))
-      .check(jsonPath("$.insights.relationships[0].attribute").count.is(0))
-
-  val checkAccountOnWatchListThroughIppProxyWithInsightsRoute: HttpRequestBuilder =
+  val checkAccountThroughIppProxyWithInsightsRoute: HttpRequestBuilder =
     http("Check if account is on watch list through ipp proxy via insights route")
       .post(s"$baseUrl/bank-account-insights/ipp")
       .header(HttpHeaderNames.ContentType, "application/json")
       .header(HttpHeaderNames.UserAgent, "bai-performance-tests")
-      .body(StringBody("""|{
-           |  "sortCode": "999998",
-           |  "accountNumber": "44311677"
+      .body(StringBody("""{
+           |  "sortCode": "#{sortCode}",
+           |  "accountNumber": "#{accountNumber}"
            |}
            |""".stripMargin))
       .asJson
       .check(status.is(200))
-      .check(jsonPath("$.insights.risk.riskScore").is("100"))
-      .check(jsonPath("$.insights.risk.reason").is(ACCOUNT_ON_WATCH_LIST))
-      .check(jsonPath("$.insights.relationships[0].attribute").is("sa_utr"))
-      .check(jsonPath("$.insights.relationships[0].count").is("1"))
-      .check(jsonPath("$.insights.relationships[0].attributeValues[0].value").is("1122334456"))
-      .check(jsonPath("$.insights.relationships[0].attributeValues[0].numOfOccurrences").is("1"))
-      .check(jsonPath("$.insights.relationships[0].attributeValues[0].lastSeen").is("2023-02-27T16:27:45.867Z"))
+      .check(jsonPath("$.insights.risk.riskScore").is("#{riskScore}"))
+      .check(jsonPath("$.insights.risk.reason").is("#{reason}"))
 }

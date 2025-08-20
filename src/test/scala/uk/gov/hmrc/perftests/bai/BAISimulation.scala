@@ -19,7 +19,7 @@ package uk.gov.hmrc.perftests.bai
 import uk.gov.hmrc.performance.simulation.PerformanceTestRunner
 import uk.gov.hmrc.perftests.bai.GatewayRequests.checkWatchListViaGateway
 import uk.gov.hmrc.perftests.bai.InsightsRequests.{checkWatchListThroughProxy, checkWatchListThroughProxyWithRoute}
-import uk.gov.hmrc.perftests.bai.IppRequests.{checkAccountNotOnWatchListThroughIppProxy, checkAccountNotOnWatchListThroughIppProxyWithBigResponses, checkAccountOnWatchListThroughIppProxy, checkAccountOnWatchListThroughIppProxyWithInsightsRoute}
+import uk.gov.hmrc.perftests.bai.IppRequests.{checkAccountThroughIppProxy, checkAccountThroughIppProxyWithInsightsRoute}
 
 class BAISimulation extends PerformanceTestRunner {
 
@@ -32,25 +32,14 @@ class BAISimulation extends PerformanceTestRunner {
   setup("check-watch-list-through-proxy-with-route", "Check watch list through proxy with route") withRequests
     checkWatchListThroughProxyWithRoute
 
-  setup("check-account-on-watch-list-through-ipp-proxy", "Check account on watch list through ipp proxy") withRequests
-    checkAccountOnWatchListThroughIppProxy
+  setup("check-account-through-ipp-proxy", "Check account through ipp proxy") withRequests
+    checkAccountThroughIppProxy
 
   setup(
-    "check-account-not-on-watch-list-through-ipp-proxy",
-    "Check account not on watch list through ipp proxy"
+    "check-account-through-ipp-proxy-with-route",
+    "Check account through ipp proxy through insights route"
   ) withRequests
-    checkAccountNotOnWatchListThroughIppProxy
-
-  setup(
-    "check-account-on-watch-list-through-ipp-proxy-with-route",
-    "Check account on watch list through ipp proxy through insights route"
-  ) withRequests
-    checkAccountOnWatchListThroughIppProxyWithInsightsRoute
-
-  setup(
-    "check-account-not-on-watch-list-through-ipp-proxy-with-big-responses",
-    "Check account not on watch list through ipp proxy with big responses"
-  ) withRequests checkAccountNotOnWatchListThroughIppProxyWithBigResponses
+    checkAccountThroughIppProxyWithInsightsRoute
 
   runSimulation()
 }

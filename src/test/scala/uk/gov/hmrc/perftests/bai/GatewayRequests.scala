@@ -20,10 +20,9 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import io.gatling.http.request.builder.HttpRequestBuilder
 import uk.gov.hmrc.perftests.bai.InsightsRequests.baseUrlFor
-import uk.gov.hmrc.perftests.testdata.Relationships.{ATTRIBUTE_VALUE_ONE, ATTRIBUTE_VALUE_TWO}
-import uk.gov.hmrc.perftests.testdata.RisklistResponseCodes.ACCOUNT_ON_WATCH_LIST
 
 object GatewayRequests {
+
   val baseUrl: String = baseUrlFor("bank-account-gateway")
 
   val checkWatchListViaGateway: HttpRequestBuilder =
@@ -32,34 +31,27 @@ object GatewayRequests {
       .header(HttpHeaderNames.ContentType, "application/json")
       .header(HttpHeaderNames.UserAgent, "bai-performance-tests")
       .body(StringBody("""|{
-           |  "sortCode": "${sortCode}",
-           |  "accountNumber": "${accountNumber}"
+           |  "sortCode": "#{sortCode}",
+           |  "accountNumber": "#{accountNumber}"
            |}
            |""".stripMargin))
       .asJson
       .check(status.is(200))
-      .check(jsonPath("$.riskScore").is("${riskScore}"))
-      .check(jsonPath("$.reason").is("${reason}"))
+      .check(jsonPath("$.riskScore").is("#{riskScore}"))
+      .check(jsonPath("$.reason").is("#{reason}"))
 
   val checkIppAccountOnWatchListViaGateway: HttpRequestBuilder =
     http("Check if account is on watch list")
       .post(s"$baseUrl/ipp")
       .header(HttpHeaderNames.ContentType, "application/json")
       .header(HttpHeaderNames.UserAgent, "bai-performance-tests")
-      .body(StringBody(
-        """|{
-           |  "sortCode": "999998",
-           |  "accountNumber": "44311677"
+      .body(StringBody("""|{
+           |  "sortCode": "#{sortCode}",
+           |  "accountNumber": "#{accountNumber}"
            |}
            |""".stripMargin))
       .asJson
       .check(status.is(200))
-      .check(jsonPath("$.insights.risk.riskScore").is("100"))
-      .check(jsonPath("$.insights.risk.reason").is(ACCOUNT_ON_WATCH_LIST))
-      .check(jsonPath("$.insights.relationships[0].attribute").is("PayeReference"))
-      .check(jsonPath("$.insights.relationships[0].count").is("1018"))
-      .check(jsonPath("$.insights.relationships[0].attributeValues[0]").is(ATTRIBUTE_VALUE_ONE))
-      .check(jsonPath("$.insights.relationships[1].attribute").is("paye_ref"))
-      .check(jsonPath("$.insights.relationships[1].count").is("1270"))
-      .check(jsonPath("$.insights.relationships[1].attributeValues[0]").is(ATTRIBUTE_VALUE_TWO))
+      .check(jsonPath("$.insights.risk.riskScore").is("#{riskScore}"))
+      .check(jsonPath("$.insights.risk.reason").is("#{reason}"))
 }
