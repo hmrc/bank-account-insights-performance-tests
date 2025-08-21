@@ -31,28 +31,27 @@ object InsightsRequests extends ServicesConfiguration {
       .header(HttpHeaderNames.ContentType, "application/json")
       .header(HttpHeaderNames.UserAgent, "bai-performance-tests")
       .body(StringBody("""|{
-           |  "sortCode": "${sortCode}",
-           |  "accountNumber": "${accountNumber}"
+           |  "sortCode": "#{sortCode}",
+           |  "accountNumber": "#{accountNumber}"
            |}
            |""".stripMargin))
       .asJson
       .check(status.is(200))
-      .check(jsonPath("$.riskScore").is("${riskScore}"))
-      .check(jsonPath("$.reason").is("${reason}"))
+      .check(jsonPath("$.riskScore").is("#{riskScore}"))
+      .check(jsonPath("$.reason").is("#{reason}"))
 
   val checkWatchListThroughProxyWithRoute: HttpRequestBuilder =
     http("Check if account is on watch list")
       .post(s"$baseUrl/bank-account-insights/check/insights")
       .header(HttpHeaderNames.ContentType, "application/json")
       .header(HttpHeaderNames.UserAgent, "bai-performance-tests")
-      .body(StringBody(
-        """|{
-           |  "sortCode": "${sortCode}",
-           |  "accountNumber": "${accountNumber}"
+      .body(StringBody("""|{
+           |  "sortCode": "#{sortCode}",
+           |  "accountNumber": "#{accountNumber}"
            |}
            |""".stripMargin))
       .asJson
       .check(status.is(200))
-      .check(jsonPath("$.riskScore").is("${riskScore}"))
-      .check(jsonPath("$.reason").is("${reason}"))
+      .check(jsonPath("$.riskScore").is("#{riskScore}"))
+      .check(jsonPath("$.reason").is("#{reason}"))
 }
