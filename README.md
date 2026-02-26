@@ -12,6 +12,30 @@ Specifically
 |bank_account_reject.csv| watchlist data|
 |accounts.csv|used to drive the watchlist simulation|
 
+
+### Current Volumetrics (JPS config)
+
+### Bank Account Insights API
+
+> Last checked/updated: **2026-02-24**
+>
+> Based on a profile of the service in production over the past year, the max requests/minute is ~10. Most of the traffic is the batched IPP traffic (handled separately)
+
+The following configuration of journeys per second (JPS) results in around ~400 requests/minute, which is a good level for testing the performance of the service without overwhelming it. It also provides us with more than enough headroom.
+
+- Business Verification: **2 JPS**
+
+### Bank Account Insights IPP API
+
+> Last checked/updated: **2026-02-24**
+>
+> Based on a profile of the service in production over the past year, the max requests/minute is ~800.
+>
+
+The following configuration of journeys per second (JPS) results in around ~1500 requests/minute, which is a good level for testing the performance of the service without overwhelming it. It also provides us with more than enough headroom. Reason for this is because they batch up calls to us.
+
+- IPP Simulation: **20 JPS**
+
 ## Running the tests
 
 Prior to executing the tests ensure you have:
