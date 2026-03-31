@@ -9,8 +9,9 @@ sm2 --start BANK_ACCOUNT_INSIGHTS_PROXY BANK_ACCOUNT_INSIGHTS BANK_ACCOUNT_GATEW
             "-J-Dmicroservice.services.access-control.allow-list.1=bai-performance-tests"
         ],
         "BANK_ACCOUNT_INSIGHTS": [
-            "-J-Dmicroservice.bank-account-insights.database.dbName=postgres",
-            "-J-Dmicroservice.bank-account-insights.database.use-canned-data=true",
+            "-J-Ddb.default.url=jdbc:postgresql://localhost:5432/postgres",
+            "-J-Ddb.default.readOnlyUrl=jdbc:postgresql://localhost:5432/postgres",
+            "-J-Ddb.default.use-canned-data=true",
             "-J-Dauditing.enabled=true"
         ]
     }'
